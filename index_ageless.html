@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Institute for Ageless Living · AEVA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    /* AEVA tokens (extracted from design system) */
+    --teal-100:#EAF6F7; --teal-200:#CBE9ED; --teal-300:#A6D8E2; --teal-400:#7FC6D6;
+    --teal-500:#4C9DAD; --teal-600:#3C8896; --teal-700:#2F6D7B; --teal-800:#21505C; --teal-900:#183A44;
+
+    --slate-50:#F5F7FA; --slate-100:#EDF0F5; --slate-150:#D3DBE9; --slate-200:#BFC8D9;
+    --slate-300:#B8C3D6; --slate-400:#8F9BB7; --slate-500:#6C7B97;
+    --slate-600:#5A6A89; --slate-700:#46546E; --slate-800:#3A475F; --slate-900:#1E2A38;
+
+    --amber-100:#FDF3E5; --amber-300:#F0CD98; --amber-500:#E29B32; --amber-700:#B07020;
+    --success-500:#2D9D78;
+    --cream:#FDF3E5; --white:#FFFFFF;
+
+    --bg-app:var(--slate-100);
+    --bg-frosted:rgba(255,255,255,0.7);
+    --bg-surface:var(--white);
+
+    --fg-strong:var(--slate-800);
+    --fg-default:var(--slate-600);
+    --fg-muted:var(--slate-500);
+    --fg-subtle:var(--slate-400);
+
+    --gradient-brand: linear-gradient(180deg, #2F6873 0%, #59C4D9 100%);
+    --gradient-brand-h: linear-gradient(44.71deg, #2F6873 -18.34%, #59C4D9 120.98%);
+
+    --shadow-xs: 2px 2px 4px 0 rgba(96,132,139,0.10);
+    --shadow-sm: 0 2px 8px 0 rgba(96,132,139,0.10);
+    --shadow-md: 0 6px 16px 0 rgba(96,132,139,0.12);
+    --shadow-3d: 0 8px 24px -4px rgba(96,132,139,0.18), 0 2px 6px 0 rgba(214,218,230,1), inset 0 1px 0 0 rgba(255,255,255,0.6);
+
+    --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px; --radius-pill:9999px;
+
+    /* Channel colors */
+    --c-google:var(--amber-500);
+    --c-google-tint:var(--amber-100);
+    --c-meta:var(--teal-500);
+    --c-meta-tint:var(--teal-100);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    height:100%;overflow:hidden;
+    font-family:"Poppins",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    color:var(--fg-default);
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  }
+  body{
+    background:var(--bg-app);
+    display:grid;grid-template-rows:auto 1fr;
+  }
+
+  /* ─────────────────────────────────────────────── HEADER (brand gradient bar) */
+  header{
+    background:var(--gradient-brand);
+    padding:18px 32px 22px;
+    border-bottom-left-radius:12px;border-bottom-right-radius:12px;
+    display:flex;justify-content:space-between;align-items:center;
+    color:#fff;
+    box-shadow:0 6px 18px -8px rgba(47,104,115,0.35);
+    position:relative;z-index:2;
+  }
+  .brand{display:flex;align-items:center;gap:18px}
+  .aeva-logo{height:28px;width:auto;display:block;filter:brightness(0) invert(1)}
+  .brand-divider{width:1px;height:30px;background:rgba(255,255,255,0.25);flex-shrink:0}
+  .ageless-logo{height:34px;width:auto;display:block;filter:brightness(0) invert(1);opacity:.95}
+  .title-block{margin-left:6px}
+  .eyebrow{
+    font-size:10px;letter-spacing:1.6px;text-transform:uppercase;
+    font-weight:600;color:rgba(255,255,255,0.82);margin-bottom:4px;
+  }
+  h1{
+    font-weight:600;font-size:18px;line-height:1.1;color:#fff;letter-spacing:-.1px;
+  }
+  h1 em{font-style:normal;font-weight:400;color:rgba(255,255,255,0.78)}
+
+  .cta-row{display:flex;gap:10px;align-items:center}
+  .pill{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.22);
+    padding:9px 16px;border-radius:var(--radius-pill);
+    font-size:12px;font-weight:500;color:#fff;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .pill i{font-size:11px;opacity:.85}
+  .pill b{font-weight:600}
+  .btn{
+    padding:10px 18px;border-radius:var(--radius-sm);
+    background:#fff;color:var(--teal-700);
+    font-family:inherit;font-weight:600;font-size:12px;letter-spacing:.1px;
+    border:0;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:filter 160ms ease,transform 160ms ease;
+    box-shadow:0 2px 6px rgba(24,58,68,0.18);
+  }
+  .btn:hover{filter:brightness(1.03)}
+  .btn:active{transform:scale(.98)}
+
+  /* ─────────────────────────────────────────────── GRID */
+  main{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    grid-template-rows:repeat(5,1fr);
+    gap:14px;
+    padding:16px 24px 22px;
+    min-height:0;position:relative;z-index:1;
+  }
+
+  /* Base card — frosted white */
+  .tile{
+    background:var(--bg-frosted);
+    border:1px solid var(--white);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-xs);
+    padding:16px 18px;
+    display:flex;flex-direction:column;
+    transition:transform .25s ease, box-shadow .25s ease;
+    overflow:hidden;position:relative;color:var(--fg-default);
+  }
+  .tile:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+
+  /* Hero tile — brand-gradient feature card */
+  .tile.hero{
+    background:var(--gradient-brand);
+    border:1px solid rgba(255,255,255,0.35);
+    box-shadow:var(--shadow-3d);
+    color:#fff;
+  }
+
+  /* Channel-accented compact cards (left edge accent strip) */
+  .tile.brand-google::before,
+  .tile.brand-meta::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;
+  }
+  .tile.brand-google::before{background:var(--c-google)}
+  .tile.brand-meta::before{background:var(--c-meta)}
+
+  /* Channel chip in card corners */
+  .ch-chip{
+    position:absolute;top:14px;right:14px;
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:9.5px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;
+    padding:4px 8px;border-radius:var(--radius-pill);
+  }
+  .ch-chip.g{background:var(--c-google-tint);color:var(--amber-700)}
+  .ch-chip.m{background:var(--c-meta-tint);color:var(--teal-700)}
+  .ch-chip i{font-size:9px}
+
+  /* ─── Grid placement (unchanged from source) */
+  .t-hero        {grid-column:1 / span 4; grid-row:1 / span 2}
+  .t-top-row     {grid-column:5 / span 8; grid-row:1; display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  .t-trend       {grid-column:5 / span 8; grid-row:2 / span 2}
+  .t-summary     {grid-column:1 / span 4; grid-row:3 / span 3}
+  .t-g-cpc       {grid-column:5 / span 2; grid-row:4}
+  .t-m-cpm       {grid-column:7 / span 2; grid-row:4}
+  .t-g-clicks    {grid-column:5 / span 2; grid-row:5}
+  .t-m-reach     {grid-column:7 / span 2; grid-row:5}
+  .t-share       {grid-column:9 / span 4; grid-row:4 / span 2}
+
+  /* ─── Typography inside cards */
+  .label{
+    font-size:10px;letter-spacing:1.6px;text-transform:uppercase;
+    font-weight:600;color:var(--fg-muted);
+  }
+  .number{
+    font-weight:600;font-size:38px;letter-spacing:-1px;line-height:1;
+    color:var(--fg-strong);font-feature-settings:"tnum";margin-top:6px;
+  }
+  .number small{font-size:16px;font-weight:500;color:var(--fg-muted)}
+  .caption{margin-top:auto;padding-top:8px;font-size:12px;color:var(--fg-default);font-weight:400;line-height:1.4}
+  .caption b{font-weight:600;color:var(--fg-strong)}
+  .delta{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:11px;font-weight:600;color:var(--success-500);
+  }
+
+  /* big-number tiles */
+  .t-google-conv,.t-meta-leads,.t-total{display:grid;grid-template-rows:auto 1fr auto;padding-top:18px}
+  .t-google-conv .number{font-size:56px;letter-spacing:-2px;margin:0;align-self:center;color:var(--amber-500)}
+  .t-meta-leads .number{font-size:56px;letter-spacing:-2px;margin:0;align-self:center;color:var(--teal-600)}
+  .t-total .number{font-size:38px;letter-spacing:-1px;margin:0;align-self:center}
+  .t-total .number small{font-size:16px}
+
+  /* compact KPI tiles */
+  .compact{display:grid;grid-template-rows:auto 1fr auto;padding-left:22px}
+  .compact .label{font-size:9.5px;letter-spacing:1.4px;align-self:start}
+  .compact .number{font-size:30px;margin:0;align-self:center}
+  .compact.brand-google .number{color:var(--amber-500)}
+  .compact.brand-meta .number{color:var(--teal-600)}
+  .compact .caption{font-size:11px;padding-top:0;align-self:end}
+
+  /* ─── Hero internals */
+  .hero-eyebrow{
+    font-size:10px;letter-spacing:1.6px;text-transform:uppercase;
+    font-weight:600;color:rgba(255,255,255,0.82);
+  }
+  .hero-title{
+    font-weight:500;font-size:22px;line-height:1.28;color:#fff;
+    margin-top:8px;letter-spacing:-.2px;
+  }
+  .hero-title em{font-style:normal;font-weight:700;color:#fff}
+  .hero-title em.g{color:#FDE3B6}
+  .hero-title em.m{color:#CBEDF4}
+  .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+  .h-stat{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:var(--radius-md);
+    padding:10px 12px;
+  }
+  .h-stat .l{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,0.78);font-weight:500}
+  .h-stat .v{font-weight:600;font-size:20px;margin-top:3px;color:#fff;letter-spacing:-.4px;font-feature-settings:"tnum"}
+  .h-stat .s{font-size:10.5px;color:rgba(255,255,255,0.78);font-weight:400;margin-top:2px}
+
+  /* ─── Trend tile */
+  .trend-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+  .trend-head .h-title{font-weight:600;font-size:14px;color:var(--fg-strong);margin-top:3px;letter-spacing:-.1px}
+  .legend-inline{display:flex;gap:14px;font-size:11px;font-weight:500;color:var(--fg-default)}
+  .legend-inline span{display:flex;align-items:center;gap:6px}
+  .legend-inline .dot{width:9px;height:9px;border-radius:50%}
+  .legend-inline .dot.g{background:var(--c-google)}
+  .legend-inline .dot.m{background:var(--c-meta)}
+
+  .trend-stack{flex:1;display:grid;grid-template-rows:1.55fr .9fr;gap:6px;min-height:0}
+  .chart-block{position:relative;min-height:0;display:flex;flex-direction:column}
+  .micro-label{
+    font-size:9px;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--fg-subtle);font-weight:600;margin:2px 0;
+  }
+  .chart-wrap{flex:1;position:relative;min-height:0}
+
+  /* ─── Share donut */
+  .pie-wrap{position:relative;flex:1;min-height:0;margin-top:4px}
+  .pie-center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
+  .pie-center .l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg-subtle);font-weight:600}
+  .pie-center .v{font-weight:700;font-size:22px;color:var(--fg-strong);margin-top:2px;letter-spacing:-.4px}
+  .legend-block{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+  .legend-block .row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+  .legend-block .row .left{display:flex;align-items:center;gap:8px;color:var(--fg-strong);font-weight:500}
+  .legend-block .row .left .dot{width:10px;height:10px;border-radius:50%}
+  .legend-block .row .v{font-weight:600;color:var(--fg-strong);font-feature-settings:"tnum"}
+  .legend-block .row .pct{color:var(--fg-muted);font-weight:500;margin-left:6px;font-size:11px}
+
+  /* ─── Summary tile — brand-gradient feature card (matches hero) */
+  .t-summary{
+    padding:18px 20px;
+    background:var(--gradient-brand);
+    border:1px solid rgba(255,255,255,0.35);
+    box-shadow:var(--shadow-3d);
+    color:#fff;
+  }
+  .t-summary .label{
+    margin-bottom:8px;color:rgba(255,255,255,0.82);
+  }
+  .summary-title{
+    font-weight:500;font-size:20px;color:#fff;
+    line-height:1.3;margin-bottom:12px;letter-spacing:-.2px;
+  }
+  .summary-title em{font-style:normal;font-weight:700;color:#CBEDF4}
+  .summary-body{font-size:13.5px;line-height:1.65;color:rgba(255,255,255,0.88);font-weight:400;flex:1;min-height:0}
+  .summary-body p + p{margin-top:10px}
+  .summary-body b{font-weight:600;color:#fff}
+  .tag-g{
+    display:inline-flex;align-items:center;gap:4px;
+    background:rgba(253,227,182,0.18);color:#FDE3B6;
+    padding:1px 7px;border-radius:var(--radius-pill);
+    font-weight:600;font-size:11.5px;
+  }
+  .tag-m{
+    display:inline-flex;align-items:center;gap:4px;
+    background:rgba(203,237,244,0.18);color:#CBEDF4;
+    padding:1px 7px;border-radius:var(--radius-pill);
+    font-weight:600;font-size:11.5px;
+  }
+  .tag-g i,.tag-m i{font-size:9px}
+
+  /* ─── Campaign table inside summary */
+  .sum-table{width:100%;border-collapse:collapse;margin-top:10px;font-feature-settings:"tnum"}
+  .sum-table th,.sum-table td{padding:4px 6px;text-align:right;font-size:11.5px;line-height:1.35}
+  .sum-table th:first-child,.sum-table td:first-child{text-align:left;padding-left:0}
+  .sum-table th:last-child,.sum-table td:last-child{padding-right:0}
+  .sum-table thead th{
+    font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;
+    color:#fff;border-bottom:1px solid rgba(255,255,255,0.28);padding-bottom:6px;
+  }
+  .sum-table td{color:rgba(255,255,255,0.9);border-bottom:1px solid rgba(255,255,255,0.12)}
+  .sum-table tr:last-child td{border-bottom:0}
+  .sum-table .ch-row td{
+    padding-top:8px;padding-bottom:3px;border-bottom:0;
+    font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;
+  }
+  .sum-table .ch-row.g td{color:#FDE3B6}
+  .sum-table .ch-row.m td{color:#CBEDF4}
+  .sum-table td b{font-weight:600;color:#fff}
+
+  @media (max-width:640px){
+    .sum-table th,.sum-table td{font-size:11px;padding:4px 4px}
+  }
+
+  /* ─────────────────────────────────────────────── RESPONSIVE
+     Desktop keeps the precise 12-col × 5-row dashboard.
+     Below 1280px we tighten spacing; below 1024px we let the page
+     scroll and reflow to a 6-col grid; below 640px everything stacks. */
+
+  @media (max-width:1280px){
+    main{padding:14px 16px 18px;gap:12px}
+    header{padding:16px 20px}
+    .number{font-size:32px}
+    .t-google-conv .number,.t-meta-leads .number{font-size:46px}
+    .t-total .number{font-size:30px}
+    .summary-title{font-size:18px}
+    .summary-body{font-size:12.5px;line-height:1.55}
+    .hero-title{font-size:19px}
+    .h-stat .v{font-size:18px}
+  }
+
+  /* ── Tablet / small laptop: release the fixed viewport, let it scroll */
+  @media (max-width:1024px){
+    html,body{height:auto;overflow:auto}
+    body{display:block}
+
+    header{
+      padding:14px 18px;
+      flex-wrap:wrap;gap:14px;
+      border-radius:0 0 12px 12px;
+    }
+    .brand{flex-wrap:wrap;gap:14px}
+    .cta-row{flex-wrap:wrap}
+
+    /* Collapse the rigid 12-col / 5-row grid into a 6-col flow.
+       Each tile gets a sensible min-height so charts have room. */
+    main{
+      grid-template-columns:repeat(6,1fr);
+      grid-template-rows:none;
+      grid-auto-rows:minmax(160px,auto);
+      padding:14px 16px 20px;
+    }
+    .t-hero       {grid-column:1 / span 6;grid-row:auto;min-height:280px}
+    .t-top-row    {grid-column:1 / span 6;grid-row:auto;grid-template-columns:repeat(3,1fr)}
+    .t-trend      {grid-column:1 / span 6;grid-row:auto;min-height:420px}
+    .t-summary    {grid-column:1 / span 6;grid-row:auto;min-height:320px}
+    .t-g-cpc      {grid-column:1 / span 3;grid-row:auto}
+    .t-m-cpm      {grid-column:4 / span 3;grid-row:auto}
+    .t-g-clicks   {grid-column:1 / span 3;grid-row:auto}
+    .t-m-reach    {grid-column:4 / span 3;grid-row:auto}
+    .t-share      {grid-column:1 / span 6;grid-row:auto;min-height:340px}
+
+    .hero-stats{grid-template-columns:repeat(4,1fr)}
+  }
+
+  /* ── Mobile: single-column stack, smaller chrome */
+  @media (max-width:640px){
+    header{
+      padding:14px 16px;
+      flex-direction:column;align-items:flex-start;
+      border-radius:0 0 10px 10px;
+    }
+    .brand{gap:10px;width:100%}
+    .aeva-logo{height:24px}
+    .ageless-logo{height:28px}
+    .brand-divider{height:24px}
+    .title-block{margin-left:0;flex-basis:100%}
+    h1{font-size:15px;line-height:1.2}
+    .eyebrow{font-size:9px;letter-spacing:1.4px}
+    .cta-row{width:100%;justify-content:space-between;gap:8px}
+    .pill{padding:7px 12px;font-size:11px}
+    .btn{padding:9px 14px;font-size:11px}
+
+    main{
+      grid-template-columns:1fr;
+      gap:12px;
+      padding:12px 12px 18px;
+      grid-auto-rows:auto;
+    }
+    .tile{padding:14px 14px;border-radius:14px}
+
+    /* All tiles span the single column */
+    .t-hero,.t-top-row,.t-trend,.t-summary,
+    .t-g-cpc,.t-m-cpm,.t-g-clicks,.t-m-reach,.t-share{
+      grid-column:1 / -1;min-height:0;
+    }
+    .t-hero{min-height:auto}
+    .t-trend{min-height:380px}
+    .t-share{min-height:300px}
+
+    /* Top KPI row: 3 cards become a stacked row of compact cards */
+    .t-top-row{
+      grid-template-columns:1fr;gap:12px;
+    }
+
+    /* Hero internals scale down */
+    .hero-title{font-size:17px;line-height:1.32}
+    .hero-stats{grid-template-columns:1fr 1fr;gap:8px}
+    .h-stat{padding:9px 10px}
+    .h-stat .v{font-size:17px}
+    .h-stat .s{font-size:10px}
+
+    /* Big-number tiles dial back */
+    .t-google-conv,.t-meta-leads{padding-top:16px}
+    .t-google-conv .number,.t-meta-leads .number{font-size:42px;letter-spacing:-1.5px}
+    .t-total .number{font-size:28px}
+    .t-total .number small{font-size:14px}
+
+    /* Channel chip moves inline so it doesn't overlap numbers */
+    .ch-chip{top:12px;right:12px;font-size:9px;padding:3px 7px}
+
+    /* Compact KPI tiles */
+    .compact{padding-left:18px;padding-top:14px;padding-bottom:14px}
+    .compact .number{font-size:26px}
+
+    /* Summary */
+    .t-summary{padding:16px 16px}
+    .summary-title{font-size:17px;margin-bottom:10px}
+    .summary-body{font-size:13px;line-height:1.6}
+
+    /* Trend tile internals */
+    .trend-head{flex-direction:column;gap:8px;margin-bottom:8px}
+    .legend-inline{font-size:10.5px;gap:12px}
+    .trend-stack{grid-template-rows:1.4fr 1fr;gap:8px}
+
+    /* Share legend */
+    .legend-block .row{font-size:11.5px}
+    .pie-center .v{font-size:20px}
+  }
+
+  /* Very narrow phones */
+  @media (max-width:380px){
+    h1{font-size:14px}
+    .pill{font-size:10.5px;padding:6px 10px}
+    .btn{font-size:10.5px;padding:8px 12px}
+    .hero-title{font-size:16px}
+    .summary-title{font-size:16px}
+    .t-google-conv .number,.t-meta-leads .number{font-size:38px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img class="aeva-logo" src="images/Aeva-logo.svg" alt="AEVA">
+    <span class="brand-divider" aria-hidden="true"></span>
+    <img class="ageless-logo" src="images/ageless-logo.png" alt="Institute for Ageless Living">
+    <div class="title-block">
+      <div class="eyebrow">performance hub</div>
+      <h1>last 30 days · <em>paid media overview</em></h1>
+    </div>
+  </div>
+  <div class="cta-row">
+    <div class="pill"><i class="far fa-calendar"></i>Jun 2 → Jul 1 · <b>2026</b></div>
+    <button class="btn" id="exportBtn"><i class="fas fa-arrow-down-to-bracket"></i>Export Report</button>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="tile hero t-hero">
+    <div class="hero-eyebrow">headline · since hydrafacial launch · jun 2</div>
+    <div class="hero-title"><em class="m">Meta</em> drove <em>59 leads</em> at <em>$53.46</em>;<br><em class="g">Google</em> delivered <em>17 conversions</em> at <em>$130.03</em>.</div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="l">Total spend</div><div class="v">$5,365</div><div class="s">across both channels</div></div>
+      <div class="h-stat"><div class="l">Total conversions</div><div class="v">76</div><div class="s">17 Google · 59 Meta</div></div>
+      <div class="h-stat"><div class="l">Blended CPA</div><div class="v">$70.59</div><div class="s">spend ÷ conversions</div></div>
+      <div class="h-stat"><div class="l">Combined clicks</div><div class="v">2,586</div><div class="s">265 G · 2,321 M</div></div>
+    </div>
+  </div>
+
+  <!-- Top row -->
+  <div class="t-top-row">
+    <div class="tile t-google-conv">
+      <div class="ch-chip g"><i class="fab fa-google"></i>Google</div>
+      <div class="label">Conversions</div>
+      <div class="number">17</div>
+      <div class="caption">CPA · <b>$130.03</b></div>
+    </div>
+    <div class="tile t-meta-leads">
+      <div class="ch-chip m"><i class="fab fa-meta"></i>Meta</div>
+      <div class="label">Website leads</div>
+      <div class="number">59</div>
+      <div class="caption">Cost / lead · <b>$53.46</b></div>
+    </div>
+    <div class="tile t-total">
+      <div class="label">Total spend</div>
+      <div class="number">$5,364<small>.91</small></div>
+      <div class="caption">Jun 2 → Jul 1 combined</div>
+    </div>
+  </div>
+
+  <!-- TREND -->
+  <div class="tile t-trend">
+    <div class="trend-head">
+      <div>
+        <div class="label">Daily trend</div>
+        <div class="h-title">Spend & conversions · Jun 2 → Jul 1</div>
+      </div>
+      <div class="legend-inline">
+        <span><span class="dot g"></span>Google</span>
+        <span><span class="dot m"></span>Meta</span>
+      </div>
+    </div>
+    <div class="trend-stack">
+      <div class="chart-block">
+        <div class="micro-label">Daily spend · USD</div>
+        <div class="chart-wrap"><canvas id="spendChart"></canvas></div>
+      </div>
+      <div class="chart-block">
+        <div class="micro-label">Daily conversions</div>
+        <div class="chart-wrap"><canvas id="convChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="tile t-summary">
+    <div class="label">Executive summary</div>
+    <div class="summary-title"><em>Meta fills the funnel</em>, Google captures the intent.</div>
+    <div class="summary-body">
+      <p>Since the Hydrafacial campaign launched on Meta on <b>June 2</b>, the Institute for Ageless Living invested <b>$5,365</b> in paid media and produced <b>76 total conversions</b> at a blended CPA of roughly <b>$71</b>. <span class="tag-m"><i class="fab fa-meta"></i>Meta</span> delivered <b>59 leads</b> at <b>$53.46</b>; <span class="tag-g"><i class="fab fa-google"></i>Google</span> went live June 16 and added <b>17 conversions</b> at <b>$130.03</b>.</p>
+      <table class="sum-table">
+        <thead>
+          <tr><th>Campaign</th><th>Cost</th><th>Conv.</th><th>Cost/Conv.</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ch-row g"><td colspan="4"><i class="fab fa-google"></i> Google Ads</td></tr>
+          <tr><td>Search · Hydrafacial</td><td>$601.11</td><td><b>6</b></td><td>$100.19</td></tr>
+          <tr><td>Search · CO2 Laser</td><td>$808.71</td><td><b>9</b></td><td>$89.86</td></tr>
+          <tr><td>Search · Laser Hair Removal</td><td>$800.74</td><td><b>2</b></td><td>$400.37</td></tr>
+          <tr class="ch-row m"><td colspan="4"><i class="fab fa-meta"></i> Meta</td></tr>
+          <tr><td>Hydrafacial</td><td>$1,299.07</td><td><b>24</b></td><td>$54.13</td></tr>
+          <tr><td>Hydrafacial 30% off</td><td>$493.17</td><td><b>12</b></td><td>$41.10</td></tr>
+          <tr><td>CO2 Laser</td><td>$685.86</td><td><b>11</b></td><td>$62.35</td></tr>
+          <tr><td>Laser Hair Removal</td><td>$676.24</td><td><b>12</b></td><td>$56.35</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPACT KPIs -->
+  <div class="tile brand-google compact t-g-cpc">
+    <div class="label">Google · CPC</div>
+    <div class="number">$8.34</div>
+    <div class="caption">Avg cost per click</div>
+  </div>
+  <div class="tile brand-google compact t-g-clicks">
+    <div class="label">Google · Clicks</div>
+    <div class="number">265</div>
+    <div class="caption">CTR · <b>5.81%</b></div>
+  </div>
+  <div class="tile brand-meta compact t-m-cpm">
+    <div class="label">Meta · CPM</div>
+    <div class="number">$35.97</div>
+    <div class="caption">Avg cost / 1K impressions</div>
+  </div>
+  <div class="tile brand-meta compact t-m-reach">
+    <div class="label">Meta · Reach</div>
+    <div class="number">27.6<small>K</small></div>
+    <div class="caption">Unique people · Jun 2 → Jul 1</div>
+  </div>
+
+  <!-- SHARE -->
+  <div class="tile t-share">
+    <div class="label">Spend share</div>
+    <div class="pie-wrap">
+      <canvas id="pie"></canvas>
+      <div class="pie-center"><div><div class="l">Total</div><div class="v">$5,365</div></div></div>
+    </div>
+    <div class="legend-block">
+      <div class="row">
+        <div class="left"><span class="dot" style="background:var(--c-google)"></span>Google</div>
+        <div><span class="v">$2,210.57</span><span class="pct">41.2%</span></div>
+      </div>
+      <div class="row">
+        <div class="left"><span class="dot" style="background:var(--c-meta)"></span>Meta</div>
+        <div><span class="v">$3,154.34</span><span class="pct">58.8%</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const dates=["06-02","06-03","06-04","06-05","06-06","06-07","06-08","06-09","06-10","06-11","06-12","06-13","06-14","06-15","06-16","06-17","06-18","06-19","06-20","06-21","06-22","06-23","06-24","06-25","06-26","06-27","06-28","06-29","06-30","07-01"];
+const gCost=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.16,6.78,11.87,37.74,42.85,99.66,147.39,199.39,211.72,164.93,248.88,249.44,222.46,211.56,180.47,174.25];
+const mCost=[72.28,69.67,73.67,58.38,47.8,74.43,65.3,64.95,70.83,72.38,68.15,73.95,86.26,66.29,69.06,70.92,96.74,157.28,96.09,178.68,177.54,153.42,145.25,143.72,136.74,117.6,172.4,168.19,150.3,156.07];
+const gConv=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,2,0,2,3,1,3,2,1];
+const mConv=[2,3,3,1,2,1,0,0,0,1,0,1,2,0,2,1,2,6,2,3,3,5,2,2,2,2,4,1,5,1];
+
+const C_G='#E29B32';     // amber-500
+const C_M='#4C9DAD';     // teal-500
+const TXT='#8F9BB7';     // slate-400 (axis text)
+const GRID='rgba(143,155,183,0.18)';
+
+Chart.defaults.font.family='Poppins';
+Chart.defaults.color=TXT;
+Chart.defaults.font.weight='500';
+
+new Chart(document.getElementById('spendChart'),{
+  type:'line',
+  data:{labels:dates,datasets:[
+    {label:'Google',data:gCost,borderColor:C_G,backgroundColor:'rgba(226,155,50,0.14)',fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:5},
+    {label:'Meta',data:mCost,borderColor:C_M,backgroundColor:'rgba(76,157,173,0.16)',fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:5}
+  ]},
+  options:{
+    maintainAspectRatio:false,responsive:true,
+    interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},border:{display:false},ticks:{color:TXT,font:{size:9,weight:'500'},maxRotation:0,autoSkipPadding:14}},
+      y:{grid:{color:GRID},border:{display:false},ticks:{color:TXT,font:{size:9},callback:v=>'$'+v}}
+    }
+  }
+});
+
+new Chart(document.getElementById('convChart'),{
+  type:'bar',
+  data:{labels:dates,datasets:[
+    {label:'Google',data:gConv,backgroundColor:C_G,borderRadius:3,barPercentage:.92,categoryPercentage:.94,stack:'conv'},
+    {label:'Meta',data:mConv,backgroundColor:C_M,borderRadius:3,barPercentage:.92,categoryPercentage:.94,stack:'conv'}
+  ]},
+  options:{
+    maintainAspectRatio:false,responsive:true,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{stacked:true,grid:{display:false},border:{display:false},ticks:{display:false}},
+      y:{stacked:true,grid:{color:GRID},border:{display:false},ticks:{color:TXT,font:{size:9},stepSize:2}}
+    }
+  }
+});
+
+new Chart(document.getElementById('pie'),{
+  type:'doughnut',
+  data:{labels:['Google','Meta'],datasets:[{
+    data:[2210.57,3154.34],
+    backgroundColor:[C_G,C_M],
+    borderColor:'#fff',borderWidth:3,hoverOffset:6
+  }]},
+  options:{maintainAspectRatio:false,responsive:true,cutout:'72%',plugins:{legend:{display:false}}}
+});
+
+/* ─── Export to PDF */
+document.getElementById('exportBtn').addEventListener('click', async function(){
+  const btn = this;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Exporting…';
+  btn.disabled = true;
+
+  const el = document.body;
+  const w = el.scrollWidth, h = el.scrollHeight;
+
+  try{
+    await html2pdf().set({
+      margin: 0,
+      filename: 'Ageless-Living-Paid-Media-Jun2-Jul1-2026.pdf',
+      image: {type:'jpeg', quality: 0.98},
+      html2canvas: {scale: 2, useCORS: true, backgroundColor: '#EDF0F5', width: w, height: h, windowWidth: w, windowHeight: h},
+      jsPDF: {unit:'px', format:[w, h], orientation: w > h ? 'landscape' : 'portrait', hotfixes:['px_scaling']}
+    }).from(el).save();
+  }catch(e){
+    console.error('PDF export failed, falling back to print dialog', e);
+    window.print();
+  }finally{
+    btn.innerHTML = original;
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
